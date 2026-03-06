@@ -23,4 +23,4 @@ def predict(data: HouseInfo):
     price = clf.predict(format_input_data(data))[0]
 
     # Return the result
-    return HousePrediction(Price=price)
+    return HousePrediction(Price=price
