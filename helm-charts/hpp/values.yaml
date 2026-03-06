@@ -1,0 +1,4 @@
+image:
+  repository: bitis2004/house-price-prediction-api
+  tag: latest
+  pullPolicy: Always

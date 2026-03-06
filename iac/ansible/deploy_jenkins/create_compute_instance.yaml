@@ -1,0 +1,54 @@
+- name: Create a Compute Engine instance
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: Start an instance
+      gcp_compute_instance:
+        name: demo-jenkins
+        machine_type: e2-small
+        zone: asia-southeast1-b
+        project: lithe-bazaar-489317-f8
+
+        auth_kind: serviceaccount
+        service_account_file: /home/thao/Downloads/Buoi_32_33/Buoi_32_33/iac/ansible/secrets/lithe-bazaar-489317-f8-7318008f02a1.json
+
+        disks:
+          - auto_delete: true
+            boot: true
+            initialize_params:
+              source_image: projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230727
+
+        network_interfaces:
+          - network:
+              selfLink: global/networks/default
+            access_configs:
+              - name: External NAT
+                type: ONE_TO_ONE_NAT
+
+        state: present
+
+    - name: Create inbound firewall rule
+      gcp_compute_firewall:
+        name: allow-port-8081-50000
+        network:
+          selfLink: global/networks/default
+
+        allowed:
+          - ip_protocol: TCP
+            ports:
+              - "8081"
+              - "50000"
+
+        source_ranges:
+          - 0.0.0.0/0
+
+        direction: INGRESS
+        description: Allow incoming traffic
+
+        project: lithe-bazaar-489317-f8
+        auth_kind: serviceaccount
+        service_account_file: /home/thao/Downloads/Buoi_32_33/Buoi_32_33/iac/ansible/secrets/lithe-bazaar-489317-f8-7318008f02a1.json
+
+        state: present
